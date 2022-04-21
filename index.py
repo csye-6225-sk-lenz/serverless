@@ -1,10 +1,10 @@
+import os
 import json
 import boto3
 from botocore.exceptions import ClientError
 
 def my_handler(event, context):
     msg = event['Records'][0]['Sns']['Message']
-
     msg_json = json.loads(msg)
     email = msg_json['email']
     token = msg_json['token']
@@ -13,9 +13,9 @@ def my_handler(event, context):
     print("token: ", token)
     print("message_type: ", msg_type)
 
-    SENDER = 'olayinka.o@northeastern.edu'
     SUBJECT = "Verify your email address!!!"
-    DOMAIN_NAME = "dev.olayinka-olasunkanmi.me"
+    DOMAIN_NAME = os.environ.get('DOMAIN_NAME')
+    SENDER = f'notification@{DOMAIN_NAME}'
     CHARSET = "UTF-8"
     BODY_HTML = f"""<html>
         <head></head>
@@ -28,6 +28,28 @@ def my_handler(event, context):
         </body>
         </html>    
     """
+
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('EmailVerificationSentMails')
+    try:
+        response = table.get_item(
+            Key={'Email': email})
+        if "Item" in response.keys():
+            print("User already exists")
+            print(response['Item'])
+            return "User already exists"
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+        return e.response['Error']['Message']
+
+    try:
+        table.put_item(
+            Item={
+                'Email': email,})
+        print("Puting item in table")
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+        return e.response['Error']['Message']
 
 
     client = boto3.client('ses')
