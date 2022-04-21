@@ -1,4 +1,5 @@
 import os
+import time
 import json
 import boto3
 from botocore.exceptions import ClientError
@@ -45,7 +46,8 @@ def my_handler(event, context):
     try:
         table.put_item(
             Item={
-                'Email': email,})
+                'Email': email,
+                'TTL': int(time.time()) + 1800,})
         print("Puting item in table")
     except ClientError as e:
         print(e.response['Error']['Message'])
