@@ -1,0 +1,44 @@
+name: Lambda CI/CD
+
+env:
+  AWS_REGION: us-east-1
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+
+  push-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # build lambda artifact
+      - name: Build Lambda Artifact
+        run: |
+          zip -f index.zip ./index.py
+
+      # setup aws awscli
+      - name: Setup AWS CLI
+        run: |
+          pip install awscli
+
+      # Configure AWS credentrials
+      - name: Configure AWS credentrials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_2ND }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_2ND }}
+          aws-region:  ${{ env.AWS_REGION }}
+
+      # upload artifact to Lambda S3
+      - name: Uploading Artifact to Lambda S3 Bucket
+        run: |
+          aws s3 cp index.zip s3://${{ secrets.S3_LAMBDA_BUCKET_2ND }}
+      
+      # updating aws lambda function
+      - name: AWS CLI lambda function update
+        run: |
+          aws lambda update-function-code --function-name EmailVerification --region ${{ env.AWS_REGION }} --zip-file fileb://index.zip
