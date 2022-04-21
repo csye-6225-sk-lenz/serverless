@@ -18,7 +18,7 @@ jobs:
       # build lambda artifact
       - name: Build Lambda Artifact
         run: |
-          zip -f index.zip ./index.py
+          zip -r index.zip ./index.py
 
       # setup aws awscli
       - name: Setup AWS CLI
