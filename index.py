@@ -8,7 +8,7 @@ from botocore.exceptions import ClientError
 def my_handler(event, context):
     msg = event['Records'][0]['Sns']['Message']
     msg_json = json.loads(msg)
-    email = parse.quote(msg_json['email'])
+    email = msg_json['email']
     token = msg_json['token']
     msg_type = msg_json['message_type']
     print("email: ", email)
@@ -24,9 +24,9 @@ def my_handler(event, context):
         <body>
         <h1>Verify Your Email Address</h1>
         <p>To continue, please verify your email address by clicking the link below. This link is valid for 5 minutes.</p>
-        <p><a  href="http://{DOMAIN_NAME}/v1/verifyUserEmail?email={email}&token={token}" target="_blank">Click here to verify email</a></p>
+        <p><a  href="http://{DOMAIN_NAME}/v1/verifyUserEmail?email={parse.quote(email)}&token={token}" target="_blank">Click here to verify email</a></p>
         <p>Or paste the following link in a browser: </p>
-        <p>http://{DOMAIN_NAME}/v1/verifyUserEmail?email={email}&token={token} </p>
+        <p>http://{DOMAIN_NAME}/v1/verifyUserEmail?email={parse.quote(email)}&token={token} </p>
         </body>
         </html>    
     """
