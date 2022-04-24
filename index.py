@@ -2,12 +2,13 @@ import os
 import time
 import json
 import boto3
+from urllib import parse
 from botocore.exceptions import ClientError
 
 def my_handler(event, context):
     msg = event['Records'][0]['Sns']['Message']
     msg_json = json.loads(msg)
-    email = msg_json['email']
+    email = parse.quote(msg_json['email'])
     token = msg_json['token']
     msg_type = msg_json['message_type']
     print("email: ", email)
