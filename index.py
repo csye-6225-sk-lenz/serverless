@@ -24,11 +24,11 @@ def my_handler(event, context):
         <body>
         <h1>Verify Your Email Address</h1>
         <p>To continue, please verify your email address by clicking the link below. This link is valid for 5 minutes.</p>
-        <p><a  href="http://{DOMAIN_NAME}/v1/verifyUserEmail?email={parse.quote(email)}&token={token}" target="_blank">Click here to verify email</a></p>
+        <p><a  href="https://{DOMAIN_NAME}/v1/verifyUserEmail?email={parse.quote(email)}&token={token}" target="_blank">Click here to verify email</a></p>
         <p>Or paste the following link in a browser: </p>
-        <p>http://{DOMAIN_NAME}/v1/verifyUserEmail?email={parse.quote(email)}&token={token} </p>
+        <p>https://{DOMAIN_NAME}/v1/verifyUserEmail?email={parse.quote(email)}&token={token} </p>
         </body>
-        </html>    
+        </html>
     """
 
     dynamodb = boto3.resource('dynamodb')
